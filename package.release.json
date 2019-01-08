@@ -1,0 +1,19 @@
+{
+  "name": "@agentframework/domain",
+  "version": "0.0.3",
+  "engines": {
+    "node": ">=8.5.0"
+  },
+  "description": "On demand dependency injection framework",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "README.md"
+  ],
+  "author": "Ling Zhang",
+  "dependencies": {
+    "agentframework": "~1.0.0-rc.7"
+  }
+}
