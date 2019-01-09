@@ -1,22 +1,14 @@
-import { Domain, inject } from '../../src/lib';
-
-class Logger {
-  log(str: string) {
-    console.log(str);
-  }
-}
-
-class App {
-  @inject()
-  logger: Logger;
-}
+import { Domain } from '../../src/lib';
+import { Car } from './agents';
 
 describe('Hello Tests', () => {
   describe('#world()', () => {
     it('should get same instance', () => {
-      const d = new Domain();
-      const app = d.construct(App);
-      expect(app instanceof App).toBeTruthy();
+      const req = new Domain();
+
+      const car = req.construct(Car, [1, 2, 3]);
+
+      expect(car.services.start()).toBeTruthy();
     });
   });
 });

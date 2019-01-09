@@ -1,6 +1,6 @@
 {
   "name": "@agentframework/domain",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "engines": {
     "node": ">=8.5.0"
   },
@@ -8,12 +8,9 @@
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "typings": "lib/index.d.ts",
-  "files": [
-    "lib",
-    "README.md"
-  ],
+  "files": ["lib", "README.md"],
   "author": "Ling Zhang",
   "dependencies": {
-    "agentframework": "~1.0.0-rc.7"
+    "agentframework": "~1.0.0-rc.7 | ^1.0.0"
   }
 }

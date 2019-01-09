@@ -1,9 +1,7 @@
 import { IInitializer, IInitializerAttribute, IInvocation } from 'agentframework';
-import { Domain, Root } from '../Domain';
+import { Domain } from '../Domain';
 
 export class InjectAttribute<T> implements IInitializerAttribute, IInitializer {
-  constructor() {}
-
   beforeDecorate(target: Object | Function, targetKey?: string | symbol, descriptor?: PropertyDescriptor): boolean {
     return true;
   }
@@ -19,13 +17,12 @@ export class InjectAttribute<T> implements IInitializerAttribute, IInitializer {
       throw new TypeError(`InjectionTypeNotFound`);
     }
 
-    // the first parameter is app
-    // the second parameter is identity ?
-    const domain: any = parameters[0];
+    // find the last parameter
+    const pn = parameters.length;
+    const domain = parameters[pn - 1];
     if (domain instanceof Domain) {
       return domain.construct(type, parameters);
-    } else {
-      return Root.construct(type, parameters);
     }
+    return null;
   }
 }
