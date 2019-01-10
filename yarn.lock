@@ -22,10 +22,10 @@ abbrev@1.0.x:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"
   integrity sha1-kbR5JYinc4wl813W9jdSovh3YTU=
 
-agentframework@~1.0.0-rc.7:
-  version "1.0.0-rc.7"
-  resolved "https://registry.yarnpkg.com/agentframework/-/agentframework-1.0.0-rc.7.tgz#80907e43fc64d9344f6576cadb247283d9cd1012"
-  integrity sha512-+95c4diF89jLjXzI/+3j/KYjtYRXKlIRwcjAbO6STUzLgmspr0YEPYS0kWB8XfGRgwmCagugx6/hRJDgpW71Ow==
+agentframework@~1.0.0-rc.10:
+  version "1.0.0-rc.12"
+  resolved "https://registry.yarnpkg.com/agentframework/-/agentframework-1.0.0-rc.12.tgz#23ab6d0d6b66a04970c3de9b0f9d3a3050d7534b"
+  integrity sha512-3kmectMhFfow4cdbqwZSlJQudgl+QPXaXueos/PIsKsKDPFB3dl4ybfJIWkdUObQnYL7khIuoSxR7CpPC+G0vA==
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -182,9 +182,9 @@ concat-map@0.0.1:
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
 core-js@^2.4.0:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.1.tgz#87416ae817de957a3f249b3b5ca475d4aaed6042"
-  integrity sha512-L72mmmEayPJBejKIWe2pYtGis5r0tQ5NaJekdhyXgeMQTpJoBsH0NL4ElY2LfSoV15xeQWKQ+XTTOZdyero5Xg==
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.2.tgz#267988d7268323b349e20b4588211655f0e83944"
+  integrity sha512-NdBPF/RVwPW6jr0NCILuyN9RiqLo2b1mddWHkUL+VnvcB7dzlnBJ1bXYntjpTGOgkZiiLWj2JxmOr7eGE3qK6g==
 
 debug@^2.6.8:
   version "2.6.9"

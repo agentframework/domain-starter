@@ -1,10 +1,9 @@
-import { Constructor, Reflector } from 'agentframework';
-
-const analyzed = new WeakMap<Constructor<any>, boolean>();
+import { Constructor, Reflector } from '../lib';
+import { AnalyzedTypes } from './Cache';
 
 export function ShouldUpgradeType(type: Constructor<any>): boolean {
-  if (analyzed.has(type)) {
-    return analyzed.get(type) || false;
+  if (AnalyzedTypes.has(type)) {
+    return AnalyzedTypes.get(type) || false;
   }
 
   const Type = Reflector(type);
@@ -30,6 +29,6 @@ export function ShouldUpgradeType(type: Constructor<any>): boolean {
     }
   }
 
-  analyzed.set(type, should);
+  AnalyzedTypes.set(type, should);
   return should;
 }

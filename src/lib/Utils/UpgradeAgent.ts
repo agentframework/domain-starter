@@ -1,4 +1,4 @@
-import { Constructor, Agent, IsAgent } from 'agentframework';
+import { Constructor, Agent, IsAgent } from '../lib';
 import { ShouldUpgradeType } from './ShouldUpgradeType';
 
 export function UpgradeAgent<T>(type: Constructor<T>): Constructor<T> {

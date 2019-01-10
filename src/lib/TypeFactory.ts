@@ -1,14 +1,9 @@
 import { UpgradeAgent } from './Utils/UpgradeAgent';
 import { TypeInitializer } from './TypeInitializer';
 import { TypeFinalizer } from './TypeFinalizer';
+import { Constructor } from './lib';
 
-export interface TypeConstructor<T> {
-  new (...args: Array<any>): T;
-  [TypeInitializer]?(...args: Array<any>): T | Promise<T>;
-  [TypeFinalizer]?(instance: T, ...args: Array<any>): T | Promise<T>;
-}
-
-export function checkTypeConstructor<T>(type: TypeConstructor<T>): void {
+export function checkTypeConstructor<T>(type: Constructor<T>): void {
   if (type.prototype[TypeInitializer]) {
     throw new SyntaxError('NotAllowInitializerOnPrototype');
   }
@@ -17,22 +12,22 @@ export function checkTypeConstructor<T>(type: TypeConstructor<T>): void {
   }
 }
 
-export function checkTypeInstance(type: any): void {
-  if (Reflect.has(type, TypeInitializer)) {
+export function checkTypeInstance<T>(type: T): void {
+  if (type[TypeInitializer]) {
     throw new SyntaxError('NotAllowInitializerOnInstance');
   }
-  if (Reflect.has(type, TypeFinalizer)) {
+  if (type[TypeFinalizer]) {
     throw new SyntaxError('NotAllowFinalizerOnInstance');
   }
 }
 
-export function construct<T>(target: TypeConstructor<T>, parameters: ArrayLike<any>, caller: any): T {
+export function construct(target: any, parameters: ArrayLike<any>, caller: any): any {
   // in case of human mistake
   checkTypeConstructor(target);
 
-  // check parameters
+  // put caller into last parameter
   let finalParameters;
-  if (parameters) {
+  if (parameters && parameters.length) {
     if (parameters[parameters.length - 1] !== caller) {
       if (Array.isArray(parameters)) {
         finalParameters = parameters.concat(caller);

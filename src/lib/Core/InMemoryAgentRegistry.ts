@@ -1,7 +1,7 @@
-import { Constructor } from 'agentframework';
-import { AgentRegistry } from './Registry/AgentRegistry';
+import { Constructor } from '../lib';
+import { AgentRegistry } from '../AgentRegistry';
 
-export class SimpleAgentRegistry extends AgentRegistry {
+export class InMemoryAgentRegistry extends AgentRegistry {
   private agents = new WeakMap<Constructor, any>();
 
   public getAgent<T>(type: Constructor<T>): T | undefined {
@@ -26,7 +26,11 @@ export class SimpleAgentRegistry extends AgentRegistry {
     this.agents.set(type, replace);
   }
 
-  public deleteAgent<T>(type: Constructor<T>, agent: T): void {
-    this.agents.delete(type);
+  public deleteAgent<T>(type: Constructor<T>, agent: T): boolean {
+    if (this.agents.has(type) && this.agents.get(type) === agent) {
+      this.agents.delete(type);
+      return true;
+    }
+    return false;
   }
 }

@@ -1,40 +1,23 @@
-import { construct, TypeConstructor } from './TypeFactory';
-import { SimpleAgentRegistry } from './SimpleAgentRegistry';
-import { AgentRegistry } from './Registry/AgentRegistry';
+import { TypeConstructor } from './TypeConstructor';
+import { IAttribute } from './lib';
+import { AgentRegistry } from './AgentRegistry';
 
-export class Domain<T> {
-  protected registry: AgentRegistry = new SimpleAgentRegistry();
+export abstract class Domain {
+  // identify
+  abstract id: number;
 
-  public construct<T extends object>(type: TypeConstructor<T>, params: ArrayLike<any>): T {
-    if (this.registry.hasAgent(type)) {
-      return this.registry.getAgent(type)!;
-    }
-    const result = construct(type, params, this);
-    if (result instanceof Promise) {
-      throw new TypeError('NotAllowConstructPromiseObject');
-    } else {
-      // remember this
-      this.registry.addAgent(type, result);
-    }
-    return result;
-  }
+  // factory methods
+  abstract construct<T extends object>(type: TypeConstructor<T>, params: ArrayLike<any>, transit?: boolean): T;
+  abstract resolve<T extends object>(type: TypeConstructor<T>, params: ArrayLike<any>, transit?: boolean): Promise<T>;
 
-  public resolve<T extends object>(type: TypeConstructor<T>, params: ArrayLike<any>): Promise<T> {
-    if (this.registry.hasAgent(type)) {
-      const agent = this.registry.getAgent(type)!;
-      if (agent instanceof Promise) {
-        return agent;
-      }
-      return Promise.resolve(agent);
-    }
-    const newCreated = construct(type, params, this);
-    this.registry.addAgent(type, newCreated);
-    if (newCreated instanceof Promise) {
-      return newCreated.then(newResolved => {
-        this.registry.replaceAgent(type, newCreated, newResolved);
-        return newResolved;
-      });
-    }
-    return Promise.resolve(newCreated);
-  }
+  // hook
+  abstract onBeforeDecorateHook(attribute: IAttribute, target: Function): boolean;
+
+  // decorators
+  abstract getClassAttribute(): IAttribute;
+
+  // storage
+  protected abstract registry: AgentRegistry;
+
+  static local: Domain;
 }

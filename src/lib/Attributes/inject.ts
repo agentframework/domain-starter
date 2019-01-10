@@ -1,4 +1,4 @@
-import { decorateClassField } from 'agentframework';
+import { decorateClassField } from '../lib';
 import { InjectAttribute } from './InjectAttribute';
 
 export function inject() {

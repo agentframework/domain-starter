@@ -1,67 +1,64 @@
-import { Domain, inject } from './lib';
 import { agent } from 'agentframework';
+import { singleton, transit, Domain } from './lib';
 
-class Fruit {
-  canEat(): boolean {
-    throw new Error('not implemented');
+class CarService {
+  constructor(a: number, b: number, c: number, d?: any) {
+    console.log('CarService(', a, b, c, d, ')');
+  }
+
+  start() {
+    console.log('staring');
+    return true;
   }
 }
 
-class CO2 {
-  constructor() {
-    console.log('CO2 ctor', arguments);
-  }
-
-  canEat(): boolean {
-    return false;
-  }
-}
-
-class Apple extends Fruit {
-  @inject()
-  co2: CO2;
-
-  constructor() {
-    super();
-    console.log('Apple ctor', arguments);
-  }
-
-  public canEat(): boolean {
-    return this.co2.canEat();
-  }
-}
 
 @agent()
-class StoreAgent {
-  constructor(...args: Array<any>) {
-    console.log('Store ctor', arguments);
+class Car {
+  constructor(a: number, b: number, c: number, d?: any) {
+    console.log('Car(', a, b, c, d, ')');
+    // the last parameter is current domain
   }
 
-  @inject()
-  apple: Apple;
+  @transit()
+  service1: CarService;
+
+  @transit()
+  service2: CarService;
+
+  @singleton()
+  service3: CarService;
+
+  @singleton()
+  service4: CarService;
+
+  @singleton()
+  service5: CarService;
 }
 
-const a = new StoreAgent(1, 2, 3, 4, 5);
+// const car = new Car(1, 2, 3);
 
-console.log('Store =', a);
-console.log('Store.apple =', a.apple);
-console.log('Store.apple.canEat() =', a.apple.canEat());
+// console.log('created car 1', car);
 
-class Store {
-  constructor(...args: Array<any>) {
-    console.log('Store ctor', arguments);
-  }
+// console.log('started 1', car.service1.start());
+// console.log('started 2', car.service2.start());
+// console.log('#1 started 3', car.service3.start());
+// console.log('#1 started 4', car.service4.start());
+// console.log('#1 started 5', car.service5.start());
 
-  @inject()
-  apple: Apple;
+// const car2 = new Car(1, 2, 3);
+// console.log('created car 2', car2);
+// console.log('car 2 started 1', car2.service1.start());
+// console.log('car 2 started 2', car2.service2.start());
+// console.log('#2 started 3', car2.service3.start());
+// console.log('#2 started 4', car2.service4.start());
+// console.log('#2 started 5', car2.service5.start());
 
-  getTheName() {}
-}
+const req = new Domain();
+const car3 = req.construct(Car, [3, 3, 3], true);
 
-const d = new Domain();
+console.log('#3 started', car3.service3.start());
 
-const store = d.construct(Store, [d, 1, 2, 3]);
-//
-console.log('Store2 =', store);
-console.log('Store2.apple =', store.apple);
-console.log('Store2.apple.canEat() =', store.apple.canEat());
+const car4 = req.construct(Car, [4, 5, 6], true);
+
+console.log('#4 started', car4.service3.start());

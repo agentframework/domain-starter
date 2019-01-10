@@ -1,5 +1,5 @@
 import { agent } from 'agentframework';
-import { inject } from '../../src/lib';
+import { transit, inject, TypeInitializer } from '../../src/lib';
 
 export class CarService {
   constructor(a: number, b: number, c: number) {
@@ -24,3 +24,31 @@ export class Car {
   services: CarService;
 }
 
+@agent()
+export class SyncCar {
+  @transit()
+  @inject()
+  services: CarService;
+
+  constructor(a: number, b: number, c: number) {
+    console.log('SyncCar(', a, b, c, ')');
+  }
+
+  static [TypeInitializer](...args: Array<any>): AsyncCar {
+    return Reflect.construct(SyncCar, args);
+  }
+}
+
+@agent()
+export class AsyncCar {
+  @inject()
+  services: CarService;
+
+  constructor(a: number, b: number, c: number) {
+    console.log('AsyncCar(', a, b, c, ') = ', this.services.start());
+  }
+
+  static [TypeInitializer](...args: Array<any>): Promise<AsyncCar> {
+    return Promise.resolve(Reflect.construct(AsyncCar, args));
+  }
+}
