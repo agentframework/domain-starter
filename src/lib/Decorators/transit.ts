@@ -12,18 +12,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Constructor, Agent, IsAgent } from '../lib';
-import { ShouldUpgradeType } from './ShouldUpgradeType';
+import { decorateClassField } from '../lib';
+import { TransitAttribute } from '../Attributes/TransitAttribute';
+import { ClassConstructor } from '../Core/Factory/AnyConstructor';
 
-export function UpgradeAgent<T>(type: Constructor<T>): Constructor<T> {
-  // type is already upgrade to agent
-  if (IsAgent(type)) {
-    return type;
-  }
-  // upgrade to Agent only if interceptor or initializer found
-  if (ShouldUpgradeType(type)) {
-    return Agent(type);
-  }
-  // do not upgrade
-  return type;
+export function transit<T extends object>(type?: ClassConstructor<T> | string) {
+  return decorateClassField(new TransitAttribute(type));
 }

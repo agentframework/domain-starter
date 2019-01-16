@@ -1,5 +1,5 @@
-import { Domain, inject } from './lib';
 import { agent } from 'agentframework';
+import { inject, InMemoryDomain } from '../../src/lib';
 
 class Fruit {
   canEat(): boolean {
@@ -58,7 +58,7 @@ class Store {
   getTheName() {}
 }
 
-const d = new Domain();
+const d = new InMemoryDomain();
 
 const store = d.construct(Store, [d, 1, 2, 3]);
 //

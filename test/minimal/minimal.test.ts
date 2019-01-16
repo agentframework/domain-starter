@@ -1,10 +1,10 @@
-import { Domain } from '../../src/lib';
+import { InMemoryDomain } from '../../src/lib';
 import { AsyncCar, Car, SyncCar } from './agents';
 
-describe('Domain Tests', () => {
+describe('Minimal Tests', () => {
   describe('#Car()', () => {
     it('should get same instance', () => {
-      const req = new Domain();
+      const req = new InMemoryDomain();
 
       const car = req.construct(Car, [1, 2, 3]);
 
@@ -14,7 +14,7 @@ describe('Domain Tests', () => {
 
   describe('#SyncCar()', () => {
     it('should get same instance', () => {
-      const req = new Domain();
+      const req = new InMemoryDomain();
 
       const car = req.construct(SyncCar, [1, 2, 3]);
 
@@ -22,10 +22,9 @@ describe('Domain Tests', () => {
     });
   });
   
-  
   describe('#AsyncCar()', () => {
     it('should get same instance', () => {
-      const req = new Domain();
+      const req = new InMemoryDomain();
       expect(() => {
         req.construct(AsyncCar, [1, 2, 3]);
       }).toThrow();

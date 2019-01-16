@@ -12,18 +12,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Constructor, Agent, IsAgent } from '../lib';
-import { ShouldUpgradeType } from './ShouldUpgradeType';
-
-export function UpgradeAgent<T>(type: Constructor<T>): Constructor<T> {
-  // type is already upgrade to agent
-  if (IsAgent(type)) {
-    return type;
-  }
-  // upgrade to Agent only if interceptor or initializer found
-  if (ShouldUpgradeType(type)) {
-    return Agent(type);
-  }
-  // do not upgrade
-  return type;
+/**
+ * Get unique id for an object for current process
+ */
+export function UniqueId(): string {
+  const { stackTraceLimit } = Error;
+  Error.stackTraceLimit = 2;
+  const stacks = Error().stack!.split('\n');
+  Error.stackTraceLimit = stackTraceLimit;
+  return stacks[stacks.length - 1].slice(7);
 }

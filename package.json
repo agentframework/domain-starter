@@ -31,7 +31,7 @@
   },
   "author": "Ling Zhang",
   "dependencies": {
-    "agentframework": "~1.0.0-rc.10"
+    "agentframework": "~1.0.0-rc.21"
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.5",

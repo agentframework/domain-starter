@@ -1,17 +1,16 @@
-import { agent } from 'agentframework';
-import { singleton, transit, Domain } from './lib';
+import { agent, Reflector } from 'agentframework';
+// import { singleton, transit } from './lib';
 
-class CarService {
-  constructor(a: number, b: number, c: number, d?: any) {
-    console.log('CarService(', a, b, c, d, ')');
-  }
-
-  start() {
-    console.log('staring');
-    return true;
-  }
-}
-
+// class CarService {
+//   constructor(a: number, b: number, c: number, d?: any) {
+//     console.log('CarService(', a, b, c, d, ')');
+//   }
+//
+//   start() {
+//     console.log('staring');
+//     return true;
+//   }
+// }
 
 @agent()
 class Car {
@@ -20,20 +19,20 @@ class Car {
     // the last parameter is current domain
   }
 
-  @transit()
-  service1: CarService;
-
-  @transit()
-  service2: CarService;
-
-  @singleton()
-  service3: CarService;
-
-  @singleton()
-  service4: CarService;
-
-  @singleton()
-  service5: CarService;
+  // @transit()
+  // service1: CarService;
+  //
+  // @transit()
+  // service2: CarService;
+  //
+  // @singleton()
+  // service3: CarService;
+  //
+  // @singleton()
+  // service4: CarService;
+  //
+  // @singleton()
+  // service5: CarService;
 }
 
 // const car = new Car(1, 2, 3);
@@ -54,11 +53,12 @@ class Car {
 // console.log('#2 started 4', car2.service4.start());
 // console.log('#2 started 5', car2.service5.start());
 
-const req = new Domain();
-const car3 = req.construct(Car, [3, 3, 3], true);
-
-console.log('#3 started', car3.service3.start());
-
-const car4 = req.construct(Car, [4, 5, 6], true);
-
-console.log('#4 started', car4.service3.start());
+console.log(Reflector(Car).paramtypes);
+// const req = new InMemoryDomain();
+// const car3 = req.construct(Car, [3, 3, 3], true);
+//
+// console.log('#3 started', car3.service3.start());
+//
+// const car4 = req.construct(Car, [4, 5, 6], true);
+//
+// console.log('#4 started', car4.service3.start());

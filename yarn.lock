@@ -22,10 +22,10 @@ abbrev@1.0.x:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"
   integrity sha1-kbR5JYinc4wl813W9jdSovh3YTU=
 
-agentframework@~1.0.0-rc.10:
-  version "1.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/agentframework/-/agentframework-1.0.0-rc.12.tgz#23ab6d0d6b66a04970c3de9b0f9d3a3050d7534b"
-  integrity sha512-3kmectMhFfow4cdbqwZSlJQudgl+QPXaXueos/PIsKsKDPFB3dl4ybfJIWkdUObQnYL7khIuoSxR7CpPC+G0vA==
+agentframework@~1.0.0-rc.21:
+  version "1.0.0-rc.21"
+  resolved "https://registry.yarnpkg.com/agentframework/-/agentframework-1.0.0-rc.21.tgz#e3530e3d426b4c549de8f207bf10273f1fbdb9fd"
+  integrity sha512-bTBAu+8zZoEh57PL8pBakoOlPKZ5dAHpluHRSflfLhTTqCLFthr7Gvuo2i8PQ0DcAf88v5SHewR19+HvOyT7Xw==
 
 ansi-regex@^2.0.0:
   version "2.1.1"

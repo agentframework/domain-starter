@@ -12,18 +12,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Constructor, Agent, IsAgent } from '../lib';
-import { ShouldUpgradeType } from './ShouldUpgradeType';
+import { DomainAttribute } from '../Attributes/DomainAttribute';
+import { AgentAttribute, decorateAgent, IAttribute } from 'agentframework';
 
-export function UpgradeAgent<T>(type: Constructor<T>): Constructor<T> {
-  // type is already upgrade to agent
-  if (IsAgent(type)) {
-    return type;
+/**
+ * scope is a `string` - retrieve the domain using scope name
+ *                     - create a new domain with scope and set current domain as parent
+ */
+export function domain(attributes?: IAttribute[]): ClassDecorator {
+  if (!attributes) {
+    attributes = <IAttribute[]>[];
   }
-  // upgrade to Agent only if interceptor or initializer found
-  if (ShouldUpgradeType(type)) {
-    return Agent(type);
-  }
-  // do not upgrade
-  return type;
+  attributes.push(new DomainAttribute());
+  return decorateAgent(new AgentAttribute(), attributes);
 }

@@ -1,33 +1,28 @@
-import { IInvocation, IInterceptorAttribute, IInterceptor } from '../lib';
-import { Domain } from '../Domain';
-import { Domains } from '../Utils/Cache';
+/* Copyright 2016 Ling Zhang
 
-export interface DomainAttributeOptions {
-  scope?: 'private' | 'type';
-  domain?: Domain;
-  newDomain?: (parent?: Domain) => Domain;
-}
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
+
+import { IInvocation, IInterceptorAttribute, IInterceptor } from '../lib';
+import { Domain } from '../Core/Domain';
+import { Domains } from '../Utils/Cache';
+import { InMemoryDomain } from '../Core/InMemoryDomain';
 
 export class DomainAttribute implements IInterceptorAttribute, IInterceptor {
-  usePrivateScope?: boolean;
-  domainScope?: any;
-  domain?: Domain;
-  newDomain: (parent?: Domain) => Domain;
-
-  constructor(options: DomainAttributeOptions) {
-    if (options.domain) {
-      this.domain = options.domain;
-    } else {
-      this.usePrivateScope = options.scope === 'private';
-      this.newDomain = options.newDomain!;
-    }
-  }
+  constructor(private domain?: Domain) {}
 
   beforeDecorate(target: Function): boolean {
     if (this.domain) {
-      return this.domain.onBeforeDecorateHook(this, target);
-    } else if (!this.usePrivateScope) {
-      this.domainScope = target;
+      return this.domain.beforeDecorate(this, target);
     }
     return true;
   }
@@ -36,35 +31,37 @@ export class DomainAttribute implements IInterceptorAttribute, IInterceptor {
     return this;
   }
 
-  private createDomain(parent?: Domain): Domain {
+  private createDomain(caller?: Domain): Domain {
     if (this.domain) {
       return this.domain;
     }
-    if (this.domainScope) {
-      let domain = Domains.get(this.domainScope);
-      if (!domain) {
-        domain = this.newDomain(parent);
-        Domains.set(this.domainScope, domain);
-      }
-      return domain;
+
+    if (caller) {
+      return caller.construct(Domain, [], true);
     }
-    return this.newDomain(parent);
+
+    return new InMemoryDomain();
   }
 
   intercept(target: IInvocation, parameters: ArrayLike<any>): any {
-    let domain;
+    let domain: Domain;
     let finalParameters;
-    if (parameters && parameters.length) {
-      if (Array.isArray(parameters)) {
-        finalParameters = parameters.slice(0);
+
+    if (parameters) {
+      const pl = parameters.length;
+      const caller = parameters[pl - 1];
+
+      if (caller instanceof Domain) {
+        if (caller === this.domain) {
+          domain = caller;
+          finalParameters = parameters;
+        } else {
+          finalParameters = Array.prototype.slice.call(parameters, 0);
+          domain = this.createDomain(caller);
+          finalParameters[pl - 1] = domain;
+        }
       } else {
         finalParameters = Array.prototype.slice.call(parameters, 0);
-      }
-      const caller = parameters[parameters.length - 1];
-      if (caller instanceof Domain) {
-        domain = this.createDomain(caller);
-        finalParameters[parameters.length - 1] = domain;
-      } else {
         domain = this.createDomain();
         finalParameters.push(domain);
       }
@@ -72,7 +69,9 @@ export class DomainAttribute implements IInterceptorAttribute, IInterceptor {
       domain = this.createDomain();
       finalParameters = [domain];
     }
+
     const agent = target.invoke(finalParameters);
+    // remember domain
     Domains.set(agent, domain);
     return agent;
   }
