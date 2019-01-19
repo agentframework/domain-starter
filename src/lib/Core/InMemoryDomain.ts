@@ -1,21 +1,8 @@
-/* Copyright 2016 Ling Zhang
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License. */
-
 import { Domain } from './Domain';
-import { construct } from './Factory/TypeFactory';
+import { construct } from './Factory/ClassFactory';
 import { AnyConstructor } from './Factory/AnyConstructor';
-import { IAttribute } from 'agentframework';
+import { IAttribute } from '../Dependencies';
+import { Domains } from '../Utils/Cache';
 
 export class InMemoryDomain extends Domain {
   public disposed: boolean;
@@ -27,15 +14,24 @@ export class InMemoryDomain extends Domain {
   constructor(parent?: Domain) {
     super();
     if (parent) this._parent = parent;
-    this.addType(Domain, InMemoryDomain);
-    this.addAgent(Domain, this);
+    this.setType(Domain, new.target);
+    this.addAgent(Domain, this, true);
   }
 
   //region Type
-  public addType<T extends object>(type: Function, replacement: AnyConstructor<T>): void {
-    if (this._types.has(type)) {
-      throw new TypeError('TypeAlreadyAdded');
+  public addType<T extends object>(type: AnyConstructor<T>): void {
+    let proto = type.prototype;
+    while (proto && proto !== Object.prototype) {
+      const ctor = proto.constructor;
+      if (!this._types.has(ctor)) {
+        this._types.set(ctor, type);
+        // console.log('set', ctor.name, ' ===> ', type.name);
+      }
+      proto = Object.getPrototypeOf(proto);
     }
+  }
+
+  public setType<T extends object>(type: Function, replacement: AnyConstructor<T>): void {
     this._types.set(type, replacement);
   }
 
@@ -65,10 +61,19 @@ export class InMemoryDomain extends Domain {
     return this._agents.has(type);
   }
 
-  public addAgent<T extends object>(type: AnyConstructor<T>, agent: T): void {
-    if (this._agents.has(type)) {
-      throw new Error('AgentAlreadyExists');
+  public addAgent<T extends object>(type: AnyConstructor<T>, agent: T, explicit?: boolean): void {
+    let proto = type.prototype;
+    while (proto && proto !== Object.prototype) {
+      const ctor = proto.constructor;
+      if (!this._agents.has(ctor)) {
+        this._agents.set(ctor, agent);
+      }
+      if (explicit) return;
+      proto = Object.getPrototypeOf(proto);
     }
+  }
+
+  public setAgent<T extends object>(type: AnyConstructor<T>, agent: T): void {
     this._agents.set(type.prototype.constructor, agent);
   }
 
@@ -91,39 +96,60 @@ export class InMemoryDomain extends Domain {
   //region Factory
   public construct<T extends object>(target: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): T {
     const type = this.getType<T>(target) || target;
-    const newCreated = construct<T>(type, params, this);
-    if (newCreated instanceof Promise) {
+    if (!transit && this.hasAgent(type)) {
+      const exists = this.getAgent(type);
+      if (exists !== undefined) {
+        return exists;
+      }
+    }
+    const agent = construct<T>(type, params, this);
+    if (agent instanceof Promise) {
       throw new Error('NotAllowAsyncConstructor');
     } else {
-      !transit && this.addAgent(type, newCreated);
-      return newCreated;
+      Domains.set(agent, this);
+      if (!transit) this.addAgent(type, agent);
+      return agent;
     }
   }
 
-  public resolve<T extends object>(target: AnyConstructor<T>, params: ArrayLike<any>): Promise<T> {
+  public resolve<T extends object>(target: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): Promise<T> {
     const type = this.getType<T>(target) || target;
-    const newCreated = construct(type, params, this);
-    // prevent double resolve
-    this.addAgent(type, newCreated);
+    if (!transit && this.hasAgent(type)) {
+      const exists = this.getAgent(type);
+      if (exists !== undefined) {
+        if (exists instanceof Promise) {
+          return exists;
+        }
+        return Promise.resolve(exists);
+      }
+    }
+    const newCreated: T | Promise<T> = construct(type, params, this);
     if (newCreated instanceof Promise) {
+      this.addAgent(type, newCreated, true);
       return newCreated.then(
-        newResolved => {
-          this.replaceAgent(type, newCreated, newResolved);
-          return newResolved;
+        agent => {
+          Domains.set(agent, this);
+          if (!transit) {
+            this.replaceAgent(type, newCreated, agent);
+            this.addAgent(type, agent);
+          }
+          return agent;
         },
         err => {
-          this.deleteAgent(type, <any>newCreated);
+          if (!transit) this.deleteAgent(type, <any>newCreated);
           throw err;
         }
       );
     } else {
+      Domains.set(newCreated, this);
+      if (!transit) this.addAgent(type, newCreated);
       return Promise.resolve(newCreated);
     }
   }
   //endregion
 
   public beforeDecorate(attribute: IAttribute, target: Function): boolean {
-    return false;
+    return true;
   }
 
   public dispose(): void {

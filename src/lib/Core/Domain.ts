@@ -1,22 +1,7 @@
-/* Copyright 2016 Ling Zhang
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License. */
-
 import { AnyConstructor } from './Factory/AnyConstructor';
-import { IAttribute } from '../lib';
+import { IAttribute } from '../Dependencies';
 
 export abstract class Domain {
-  
   /**
    * Return true if this domain been disposing
    */
@@ -41,12 +26,12 @@ export abstract class Domain {
   /**
    * Create an agent
    */
-  abstract construct<T extends object>(type: AnyConstructor<T>, params?: ArrayLike<any>, transit?: boolean): T;
+  abstract construct<T extends object>(type: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): T;
 
   /**
    * Resolve an agent using factory method
    */
-  abstract resolve<T extends object>(type: AnyConstructor<T>, params?: ArrayLike<any>, transit?: boolean): Promise<T>;
+  abstract resolve<T extends object>(type: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): Promise<T>;
 
   //endregion
 
@@ -69,7 +54,12 @@ export abstract class Domain {
   /**
    * Register type
    */
-  abstract addType<T extends object>(type: Function, replacement: AnyConstructor<T>): void;
+  abstract addType<T extends object>(type: AnyConstructor<T>): void;
+
+  /**
+   * Replace type
+   */
+  abstract setType<T extends object>(type: Function, replacement: AnyConstructor<T>): void;
 
   /**
    * Delete type mapping for giving type
@@ -91,8 +81,13 @@ export abstract class Domain {
   /**
    * Add an agent
    */
-  abstract addAgent<T extends object>(type: AnyConstructor<T>, agent: T): void;
+  abstract addAgent<T extends object>(type: AnyConstructor<T>, agent: T, explicit?: boolean): void;
 
+  /**
+   * Set agent instance
+   */
+  abstract setAgent<T extends object>(type: AnyConstructor<T>, agent: T): void;
+  
   /**
    * Replace agent, throw error if origin agent not match
    */

@@ -1,4 +1,4 @@
-import { Member, Reflector } from '../lib';
+import { Member, Reflector } from '../Dependencies';
 
 export function GetMember(
   target: Object | Function,
