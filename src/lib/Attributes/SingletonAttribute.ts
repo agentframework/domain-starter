@@ -29,13 +29,18 @@ export class SingletonAttribute<T extends object> implements IAttribute {
     if (!type) {
       throw new TypeError(`SingletonTypeNotFound`);
     }
-
+  
     // if this object created by domain, the last argument is domain itself
-    const pn = parameters.length;
-    let domain = parameters[pn - 1];
-
-    if (!(domain instanceof Domain) && target.agent) {
+    let domain;
+    if (target.agent) {
       domain = target.agent instanceof Domain ? target.agent : GetDomain(target.agent);
+    }
+  
+    if (!(domain instanceof Domain)) {
+      const tail = parameters[parameters.length - 1];
+      if (tail instanceof Domain) {
+        domain = tail;
+      }
     }
 
     if (domain instanceof Domain) {
