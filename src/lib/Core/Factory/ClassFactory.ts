@@ -26,30 +26,28 @@ export function construct<T extends object>(target: AnyConstructor<T>, parameter
   // in case of human mistake
   checkTypeConstructor(target);
 
-  let finalParameters;
-  if (tail) {
-    // put caller into last parameter if not found
-    const pl = parameters.length;
-    if (pl) {
-      if (parameters[pl - 1] === tail) {
-        finalParameters = parameters;
-      } else {
-        finalParameters = Array.prototype.slice.call(parameters, 0).concat(tail);
-      }
-    } else {
-      finalParameters = [tail];
-    }
-  } else {
-    finalParameters = parameters;
-  }
-
   // get initializer factory from type
   const initializerFunction = target[ClassInitializer];
-
   let result;
   if (initializerFunction) {
-    result = Reflect.apply(initializerFunction, target, finalParameters);
+    result = Reflect.apply(initializerFunction, target, [tail, parameters]);
   } else {
+    let finalParameters;
+    if (tail) {
+      // put caller into last parameter if not found
+      const pl = parameters.length;
+      if (pl) {
+        if (parameters[pl - 1] === tail) {
+          finalParameters = parameters;
+        } else {
+          finalParameters = Array.prototype.slice.call(parameters, 0).concat(tail);
+        }
+      } else {
+        finalParameters = [tail];
+      }
+    } else {
+      finalParameters = parameters;
+    }
     result = Reflect.construct(UpgradeAgent(<Constructor<T>>target), finalParameters);
   }
 

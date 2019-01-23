@@ -1,6 +1,7 @@
 import { IInvocation, IInterceptorAttribute, IInterceptor } from '../Dependencies';
 import { Domain } from '../Core/Domain';
 import { Domains } from '../Utils/Cache';
+import { InMemoryDomain } from '../Core/InMemoryDomain';
 
 export class DomainAttribute implements IInterceptorAttribute, IInterceptor {
   constructor(private domain?: Domain) {}
@@ -22,7 +23,7 @@ export class DomainAttribute implements IInterceptorAttribute, IInterceptor {
     }
 
     if (caller) {
-      return caller.construct(Domain, [], true);
+      return new InMemoryDomain(caller);
     }
 
     throw new Error('ParentDomainNotFound');

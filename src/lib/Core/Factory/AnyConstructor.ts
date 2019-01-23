@@ -12,13 +12,13 @@ export interface AbstractConstructor<T extends object> extends Function {
 }
 
 export interface ClassConstructor<T extends object> extends TypeConstructor<T> {
-  [ClassInitializer]?(domain: Domain, ...parameters: any): T | Promise<T>;
-  [ClassFinalizer]?(instance: T, domain: Domain, ...parameters: any): T | Promise<T>;
+  [ClassInitializer]?(domain: Domain, ...parameters: Array<any>): T | Promise<T>;
+  [ClassFinalizer]?(instance: T, domain: Domain, ...parameters: Array<any>): T | Promise<T>;
 }
 
 export interface AbstractClassConstructor<T extends object> extends AbstractConstructor<T> {
-  [ClassInitializer]?(domain: Domain, ...parameters: any): T | Promise<T>;
-  [ClassFinalizer]?(instance: T, domain: Domain, ...parameters: any): T | Promise<T>;
+  [ClassInitializer]?(domain: Domain, ...parameters: Array<any>): T | Promise<T>;
+  [ClassFinalizer]?(instance: T, domain: Domain, ...parameters: Array<any>): T | Promise<T>;
 }
 
 export type AnyConstructor<T extends object> = ClassConstructor<T> | AbstractClassConstructor<T>;
