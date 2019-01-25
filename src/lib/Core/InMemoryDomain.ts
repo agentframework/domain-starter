@@ -94,7 +94,7 @@ export class InMemoryDomain extends Domain {
   //endregion
 
   //region Factory
-  public construct<T extends object>(target: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): T {
+  public construct<T extends object>(target: AnyConstructor<T>, params?: ArrayLike<any>, transit?: boolean): T {
     const type = this.getType<T>(target) || target;
     if (!transit) {
       const exists = this.getAgent(type);
@@ -102,7 +102,7 @@ export class InMemoryDomain extends Domain {
         return exists;
       }
     }
-    const agent = construct<T>(type, params, this);
+    const agent = construct<T>(type, params || [], this);
     if (agent instanceof Promise) {
       throw new Error('NotAllowAsyncConstructor');
     } else {
@@ -112,7 +112,7 @@ export class InMemoryDomain extends Domain {
     }
   }
 
-  public resolve<T extends object>(target: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): Promise<T> {
+  public resolve<T extends object>(target: AnyConstructor<T>, params?: ArrayLike<any>, transit?: boolean): Promise<T> {
     const type = this.getType<T>(target) || target;
     if (!transit) {
       const exists = this.getAgent(type);
@@ -122,7 +122,7 @@ export class InMemoryDomain extends Domain {
         return Promise.resolve(exists);
       }
     }
-    const newCreated: T | Promise<T> = construct(type, params, this);
+    const newCreated: T | Promise<T> = construct(type, params || [], this);
     if (newCreated instanceof Promise) {
       this.addAgent(type, newCreated, true);
       return newCreated.then(

@@ -26,12 +26,12 @@ export abstract class Domain {
   /**
    * Create an agent
    */
-  abstract construct<T extends object>(type: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): T;
+  abstract construct<T extends object>(type: AnyConstructor<T>, params?: ArrayLike<any>, transit?: boolean): T;
 
   /**
    * Resolve an agent using factory method
    */
-  abstract resolve<T extends object>(type: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): Promise<T>;
+  abstract resolve<T extends object>(type: AnyConstructor<T>, params?: ArrayLike<any>, transit?: boolean): Promise<T>;
 
   //endregion
 
