@@ -54,7 +54,7 @@ export class InMemoryDomain extends Domain {
 
   //region Agent
   public getAgent<T extends object>(type: AnyConstructor<T>): T | undefined {
-    return this._agents.get(type);
+    return this._agents.has(type) ? this._agents.get(type) : this._parent && this._parent.getAgent<T>(type);
   }
 
   public hasAgent<T extends object>(type: AnyConstructor<T>): boolean {
