@@ -96,7 +96,7 @@ export class InMemoryDomain extends Domain {
   //region Factory
   public construct<T extends object>(target: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): T {
     const type = this.getType<T>(target) || target;
-    if (!transit && this.hasAgent(type)) {
+    if (!transit) {
       const exists = this.getAgent(type);
       if (exists !== undefined) {
         return exists;
@@ -114,12 +114,11 @@ export class InMemoryDomain extends Domain {
 
   public resolve<T extends object>(target: AnyConstructor<T>, params: ArrayLike<any>, transit?: boolean): Promise<T> {
     const type = this.getType<T>(target) || target;
-    if (!transit && this.hasAgent(type)) {
+    if (!transit) {
       const exists = this.getAgent(type);
-      if (exists !== undefined) {
-        if (exists instanceof Promise) {
-          return exists;
-        }
+      if (exists instanceof Promise) {
+        return exists;
+      } else if (exists !== undefined) {
         return Promise.resolve(exists);
       }
     }
