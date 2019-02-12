@@ -163,7 +163,7 @@ export class InMemoryDomain extends Domain {
     this.disposing = true;
     this._types.clear();
     for (const [, agent] of this._agents.entries()) {
-      if (!agent.disposing && !agent.disposed) {
+      if (agent.dispose && !agent.disposing && !agent.disposed) {
         agent.dispose();
       }
     }
