@@ -1,5 +1,5 @@
 {
-  "name": "@agentframework/domain",
+  "name": "agentframework-domain",
   "version": "0.0.0",
   "private": true,
   "engines": {

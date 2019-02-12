@@ -1,7 +1,8 @@
 import { AnyConstructor } from './Factory/AnyConstructor';
 import { IAttribute } from '../Dependencies';
+import { IDisposable } from './IDisposable';
 
-export abstract class Domain {
+export abstract class Domain implements IDisposable {
   /**
    * Return true if this domain been disposing
    */

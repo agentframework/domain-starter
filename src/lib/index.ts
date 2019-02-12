@@ -1,5 +1,5 @@
 export { AnyConstructor, AbstractClassConstructor, ClassConstructor } from './Core/Factory/AnyConstructor';
-
+export { IDisposable } from './Core/IDisposable';
 export { Domain } from './Core/Domain';
 export { GetDomain } from './Utils/Cache';
 export { InMemoryDomain } from './Core/InMemoryDomain';

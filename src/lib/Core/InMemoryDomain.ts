@@ -3,6 +3,7 @@ import { construct } from './Factory/ClassFactory';
 import { AnyConstructor } from './Factory/AnyConstructor';
 import { IAttribute } from '../Dependencies';
 import { Domains } from '../Utils/Cache';
+import { IDisposable } from './IDisposable';
 
 export class InMemoryDomain extends Domain {
   public disposed: boolean;
@@ -87,6 +88,10 @@ export class InMemoryDomain extends Domain {
   public deleteAgent<T extends object>(type: AnyConstructor<T>, agent: T): boolean {
     if (this._agents.has(type) && this._agents.get(type) === agent) {
       this._agents.delete(type);
+      const disposable = agent as IDisposable;
+      if (disposable.dispose && !disposable.disposing && !disposable.disposed) {
+        disposable.dispose();
+      }
       return true;
     }
     return false;
@@ -157,6 +162,11 @@ export class InMemoryDomain extends Domain {
     }
     this.disposing = true;
     this._types.clear();
+    for (const [, agent] of this._agents.entries()) {
+      if (!agent.disposing && !agent.disposed) {
+        agent.dispose();
+      }
+    }
     this._agents.clear();
     this.disposed = true;
   }

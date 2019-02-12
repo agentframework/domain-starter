@@ -1,6 +1,8 @@
 /**
  * Get unique id for an object for current process
  */
+declare const Error: any;
+
 export function UniqueId(): string {
   const { stackTraceLimit } = Error;
   Error.stackTraceLimit = 2;
